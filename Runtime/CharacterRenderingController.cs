@@ -30,8 +30,8 @@ namespace HSR.NPRShader
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [AddComponentMenu("StarRail NPR Shader/StarRail Character Rendering Controller")]
-    public sealed class StarRailCharacterRenderingController : MonoBehaviour, IShadowCaster
+    [AddComponentMenu("NPR Shader/Character Rendering Controller")]
+    public sealed class CharacterRenderingController : MonoBehaviour, IShadowCaster
     {
         private enum TransformDirection
         {

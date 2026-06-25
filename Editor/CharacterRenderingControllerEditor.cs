@@ -27,8 +27,8 @@ using UnityEditor.Rendering;
 namespace HSR.NPRShader.Editor
 {
     [CanEditMultipleObjects]
-    [CustomEditor(typeof(StarRailCharacterRenderingController))]
-    internal class StarRailCharacterRenderingControllerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CharacterRenderingController))]
+    internal class CharacterRenderingControllerEditor : UnityEditor.Editor
     {
         private SerializedProperty m_RampCoolWarmMix;
         private SerializedProperty m_DitherAlpha;

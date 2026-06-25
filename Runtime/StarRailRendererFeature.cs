@@ -30,7 +30,7 @@ using UnityEngine.Rendering.Universal;
 namespace HSR.NPRShader
 {
     [HelpURL("https://srshader.stalomeow.com/")]
-    [DisallowMultipleRendererFeature("Honkai Star Rail")]
+    [DisallowMultipleRendererFeature("StarRailNPRShadow")]
     public class StarRailRendererFeature : ScriptableRendererFeature
     {
 #if UNITY_EDITOR
