@@ -149,6 +149,9 @@ namespace HSR.NPRShader
             renderer.EnqueuePass(m_PostProcessPass);
         }
 
+        /// <summary>自阴影 Cull 时用此方向光矩阵替代 URP 主光（由 MaterialGlobalSetting.CharacterLight 赋值）。</summary>
+        public static Light overrideMainLightForSelf;
+
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
             // PreviewCamera 不会执行这部分代码！！！
@@ -159,7 +162,8 @@ namespace HSR.NPRShader
 
             if (m_EnableSelfShadow)
             {
-                m_SelfShadowCasterManager.Cull(in renderingData, PerObjectShadowCasterPass.MaxShadowCount, m_SelfShadowDebugMode);
+                m_SelfShadowCasterManager.Cull(in renderingData, PerObjectShadowCasterPass.MaxShadowCount,
+                    m_SelfShadowDebugMode, overrideMainLightForSelf);
                 m_SelfPerObjShadowPass.Setup(m_SelfShadowCasterManager, m_SelfShadowTileResolution, m_SelfShadowDepthBits);
             }
 

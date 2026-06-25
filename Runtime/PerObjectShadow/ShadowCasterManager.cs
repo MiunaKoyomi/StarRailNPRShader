@@ -74,14 +74,28 @@ namespace HSR.NPRShader.PerObjectShadow
             }
         }
 
-        public unsafe void Cull(in RenderingData renderingData, int maxCount, bool debugMode)
+        public unsafe void Cull(in RenderingData renderingData, int maxCount, bool debugMode, Light overrideMainLightForSelf = null)
         {
             m_RendererIndexList.Clear();
             m_CullResults.Reset(maxCount);
 
-            if (s_Casters.Count <= 0 || !TryGetMainLight(in renderingData, out VisibleLight mainLight))
+            Matrix4x4 mainLightMatrix;
+
+            if (overrideMainLightForSelf != null)
+            {
+                mainLightMatrix = overrideMainLightForSelf.transform.localToWorldMatrix;
+                if (s_Casters.Count <= 0)
+                {
+                    return;
+                }
+            }
+            else if (s_Casters.Count <= 0 || !TryGetMainLight(in renderingData, out VisibleLight mainLight))
             {
                 return;
+            }
+            else
+            {
+                mainLightMatrix = mainLight.localToWorldMatrix;
             }
 
             Camera camera;
@@ -107,7 +121,7 @@ namespace HSR.NPRShader.PerObjectShadow
                 Usage = Usage,
                 FrustumEightCorners = frustumCorners,
                 CameraLocalToWorldMatrix = cameraTransform.localToWorldMatrix,
-                MainLightLocalToWorldMatrix = mainLight.localToWorldMatrix,
+                MainLightLocalToWorldMatrix = mainLightMatrix,
             };
 
             foreach (var caster in s_Casters)

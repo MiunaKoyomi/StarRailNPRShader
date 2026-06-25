@@ -104,8 +104,6 @@ namespace HSR.NPRShader.Passes
             VolumeStack stack = VolumeManager.instance.stack;
             m_BloomConfig = stack.GetComponent<CustomBloom>();
             m_TonemappingConfig = stack.GetComponent<CustomTonemapping>();
-
-            AllocateBloomRTHandles(in cameraTextureDescriptor);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -114,6 +112,19 @@ namespace HSR.NPRShader.Passes
             {
                 return;
             }
+
+            // MiunaPostProcessPatch
+            VolumeStack stack = VolumeManager.instance.stack;
+            m_BloomConfig = stack.GetComponent<CustomBloom>();
+            m_TonemappingConfig = stack.GetComponent<CustomTonemapping>();
+
+            if (!m_BloomConfig.IsActive() && !m_TonemappingConfig.IsActive())
+            {
+                return;
+            }
+
+            RenderTextureDescriptor cameraDesc = renderingData.cameraData.cameraTargetDescriptor;
+            AllocateBloomRTHandles(in cameraDesc);
 
             CommandBuffer cmd = CommandBufferPool.Get();
 
@@ -216,6 +227,9 @@ namespace HSR.NPRShader.Passes
 
             RenderTextureDescriptor desc = cameraTextureDescriptor;
             desc.depthBufferBits = (int)DepthBits.None;
+            // Miuna: CharactersOnly 绑相机 depth 时 color MSAA 须与 depth 一致。
+            desc.msaaSamples = Mathf.Max(1, cameraTextureDescriptor.msaaSamples);
+            desc.bindMS = desc.msaaSamples > 1;
             RenderingUtils.ReAllocateIfNeeded(ref m_BloomCharacterColor, in desc, FilterMode.Bilinear, TextureWrapMode.Clamp, name: "_BloomCharacterColor");
         }
 
@@ -390,6 +404,17 @@ namespace HSR.NPRShader.Passes
 
                 CoreUtils.SetKeyword(material, KeywordNames._USE_FAST_SRGB_LINEAR_CONVERSION,
                     renderingData.postProcessingData.useFastSRGBLinearConversion);
+
+                ScriptableRenderer uberRenderer = renderingData.cameraData.renderer;
+                RTHandle uberColor = uberRenderer.cameraColorTargetHandle;
+                RTHandle uberFront = uberRenderer.GetCameraColorFrontBuffer(cmd);
+                if (uberColor == null || uberColor.rt == null || uberFront == null || uberFront.rt == null)
+                {
+#if UNITY_EDITOR
+                    Debug.LogWarning("[StarRail] PostProcess Uber Blit skipped: camera color buffer not ready.");
+#endif
+                    return;
+                }
 
                 Blit(cmd, ref renderingData, material);
             }
