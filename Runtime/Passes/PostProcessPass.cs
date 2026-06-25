@@ -405,10 +405,8 @@ namespace HSR.NPRShader.Passes
                 CoreUtils.SetKeyword(material, KeywordNames._USE_FAST_SRGB_LINEAR_CONVERSION,
                     renderingData.postProcessingData.useFastSRGBLinearConversion);
 
-                ScriptableRenderer uberRenderer = renderingData.cameraData.renderer;
-                RTHandle uberColor = uberRenderer.cameraColorTargetHandle;
-                RTHandle uberFront = uberRenderer.GetCameraColorFrontBuffer(cmd);
-                if (uberColor == null || uberColor.rt == null || uberFront == null || uberFront.rt == null)
+                RTHandle uberColor = renderingData.cameraData.renderer.cameraColorTargetHandle;
+                if (uberColor == null || uberColor.rt == null)
                 {
 #if UNITY_EDITOR
                     Debug.LogWarning("[StarRail] PostProcess Uber Blit skipped: camera color buffer not ready.");
