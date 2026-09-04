@@ -79,6 +79,7 @@ namespace HSR.NPRShader
 
         public override void Create()
         {
+            Dispose(false);
             m_SceneShadowCasterManager = new ShadowCasterManager(ShadowUsage.Scene);
             m_SelfShadowCasterManager = new ShadowCasterManager(ShadowUsage.Self);
 
@@ -175,11 +176,16 @@ namespace HSR.NPRShader
 
         protected override void Dispose(bool disposing)
         {
-            m_ScenePerObjShadowPass.Dispose();
-            m_HairDepthOnlyPass.Dispose();
-            m_ScreenSpaceShadowPass.Dispose();
-            m_SelfPerObjShadowPass.Dispose();
-            m_PostProcessPass.Dispose();
+            m_ScenePerObjShadowPass?.Dispose();
+            m_HairDepthOnlyPass?.Dispose();
+            m_ScreenSpaceShadowPass?.Dispose();
+            m_SelfPerObjShadowPass?.Dispose();
+            m_PostProcessPass?.Dispose();
+            m_ScenePerObjShadowPass = null;
+            m_HairDepthOnlyPass = null;
+            m_ScreenSpaceShadowPass = null;
+            m_SelfPerObjShadowPass = null;
+            m_PostProcessPass = null;
 
             base.Dispose(disposing);
         }

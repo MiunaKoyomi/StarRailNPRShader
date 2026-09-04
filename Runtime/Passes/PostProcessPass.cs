@@ -165,7 +165,11 @@ namespace HSR.NPRShader.Passes
             mipDesc.msaaSamples = 1;
 
             int mipDownCountExtra = m_BloomConfig.MipDownCount.value;
-            Array.Resize(ref m_BloomMipDown, mipDownCountExtra + BloomMipDownBlurCount);
+            int mipCount = mipDownCountExtra + BloomMipDownBlurCount;
+            // Array.Resize drops references; release truncated GPU resources first.
+            for (int i = mipCount; i < m_BloomMipDown.Length; i++)
+                m_BloomMipDown[i]?.Release();
+            Array.Resize(ref m_BloomMipDown, mipCount);
 
             for (int i = 0; i < m_BloomMipDown.Length; i++)
             {
